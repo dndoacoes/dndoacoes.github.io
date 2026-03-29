@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Resgates</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- DESIGN AZUL & ANIMAÇÕES --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #000510;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Efeito de Neve */
+        .snow-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .snowflake {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh); }
+            100% { transform: translateY(110vh); }
+        }
+
+        /* Container Principal */
+        .container {
+            width: 95%;
+            max-width: 390px;
+            background: rgba(5, 15, 30, 0.9);
+            padding: 35px 20px;
+            border-radius: 20px;
+            border: 1px solid #0044ff;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 70, 255, 0.3);
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .titulo-wrapper {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2.2rem, 9vw, 3.5rem);
+            margin-bottom: 20px;
+        }
+
+        .white { color: #fff; }
+        .red { 
+            color: #0084ff; /* Mudado para Azul */
+            text-shadow: 0 0 15px rgba(0, 132, 255, 0.8);
+        }
+
+        p { color: #bbb; font-size: 1.1rem; margin-bottom: 25px; }
+
+        /* --- BOTÃO COM BORDA GIRATÓRIA (ANIMATED BORDER) --- */
+        .btn-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+            padding: 3px; /* Espaço para a borda girar */
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .btn-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: conic-gradient(transparent, transparent, transparent, #0084ff);
+            animation: rotate 2s linear infinite;
+            top: -25%; left: -25%;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .btn-main {
+            position: relative;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            background: #0044ff; /* Azul */
+            color: white;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.7rem;
+            cursor: pointer;
+            clip-path: polygon(7% 0, 100% 0, 93% 100%, 0% 100%);
+            z-index: 2;
+            transition: 0.3s;
+        }
+
+        .btn-main:hover { transform: scale(1.02); filter: brightness(1.2); }
+
+        /* LOADER AZUL */
+        .loader-box { display: none; }
+        .loader-title { font-family: 'Bebas Neue'; font-size: 2rem; color: #fff; }
+        .loader-status { font-size: 12px; color: #0084ff; margin-top: 10px; }
+        .bar-container {
+            width: 100%; height: 12px;
+            background: #001133;
+            margin: 25px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #0044ff;
+        }
+        .bar-fill {
+            width: 0%; height: 100%;
+            background: #0084ff;
+            box-shadow: 0 0 15px #0084ff;
+            animation: fillBar 3s forwards ease-in-out;
+        }
+        @keyframes fillBar { to { width: 100%; } }
+
+        /* TELA FINAL */
+        .final-screen { display: none; }
+        .card-preview {
+            background: #000;
+            border-radius: 15px;
+            padding: 8px;
+            border: 2px solid #0044ff;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .img-ff { width: 100%; border-radius: 10px; opacity: .5; filter: contrast(1.2); }
+        .overlay-lock { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; text-shadow: 0 0 10px #0044ff; }
+
+        .success-msg {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #28a745;
+            padding: 12px; font-size: .9rem; text-align: left; margin-bottom: 15px;
+        }
+
+        .btn-unlock { background: #28a745 !important; border-radius: 10px !important; clip-path: none !important; }
+
+        /* UTIL */
+        .active { display: block !important; animation: fadeIn 0.5s; }
+        .hidden { display: none !important; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="snow-container" id="snow"></div>
+
+<div class="container">
+
+    <div id="step1">
+        <div class="titulo-wrapper">
+            <span class="white">CONTA</span> <span class="red">GEMADA</span>
+        </div>
+        <p>Clique no botão abaixo para resgatar sua continha gemada agora mesmo!</p>
+        <div class="btn-wrapper">
+            <button class="btn-main" onclick="proximo()">RESGATAR AGORA</button>
+        </div>
+    </div>
+
+    <div id="step2" class="loader-box">
+        <h2 class="loader-title">SINCRONIZANDO...</h2>
+        <div class="bar-container">
+            <div class="bar-fill"></div>
+        </div>
+        <p class="loader-status">VERIFICANDO SEGURANÇA DA CONTA...</p>
+    </div>
+
+    <div id="step3" class="final-screen">
+        <div class="titulo-wrapper">
+            <span class="white">CONTA</span> <span class="red">BLOQUEADA</span>
+        </div>
+        <div class="card-preview">
+            <div class="overlay-lock">🔒</div>
+            <img src="imgff.jpg" id="imgConta" class="img-ff" alt="Conta FF">
+        </div>
+        <p class="success-msg">
+            ✅ <b>CONTA ENCONTRADA!</b><br>
+            Para realizar o desbloqueio e receber os dados, clique no botão abaixo.
+        </p>
+        <div class="btn-wrapper" style="background:none;">
+             <button class="btn-main btn-unlock" onclick="desbloquear()">DESBLOQUEAR CONTA</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Gerar Neve
+    const snowContainer = document.getElementById('snow');
+    for (let i = 0; i < 50; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.className = 'snowflake';
+        snowflake.style.left = Math.random() * 100 + '%';
+        snowflake.style.width = snowflake.style.height = Math.random() * 4 + 2 + 'px';
+        snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+        snowflake.style.animationDelay = Math.random() * 5 + 's';
+        snowContainer.appendChild(snowflake);
+    }
+
+    function proximo() {
+        document.getElementById("step1").classList.add("hidden");
+        document.getElementById("step2").classList.add("active");
+
+        setTimeout(() => {
+            document.getElementById("step2").classList.remove("active");
+            document.getElementById("step3").classList.add("active");
+
+            const imagens = ["imgff.jpg", "imgff1.jpg", "imgff2.jpg"];
+            const aleatoria = imagens[Math.floor(Math.random() * imagens.length)];
+            document.getElementById("imgConta").src = aleatoria;
+        }, 3000);
+    }
+
+    function desbloquear() {
+        window.location.href = "https://www.tiktok.com/d/4/ZS91sSs1cnNMu-POP6o/";
+    }
+</script>
+
+</body>
+</html>
